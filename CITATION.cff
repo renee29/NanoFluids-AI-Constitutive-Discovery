@@ -1,0 +1,54 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+type: software
+title: "NanoFluids-AI WP3: Symbolic Discovery Engine (Prototype)"
+version: 1.0.0-proposal
+date-released: 2025-12-06
+abstract: |
+  Prototype implementation of symmetry-guided symbolic distillation for
+  discovering constitutive laws from molecular dynamics data. This code
+  demonstrates the feasibility of recovering rheological closures using
+  Sequential Thresholded Ridge Regression (STRidge) whilst enforcing
+  physical consistency constraints. Developed for Work Package 3 of the
+  ERC Consolidator Grant 2026 proposal "NanoFluids-AI: Physics-Guided
+  Machine Learning for Nanoconfined Fluid Dynamics".
+authors:
+  - family-names: Fábregas
+    given-names: René
+    orcid: https://orcid.org/0000-0002-3751-8853
+    affiliation: "Modelling Nature (MNat) Research Unit, Universidad de Granada, Spain"
+    email: rfabregas@ugr.es
+keywords:
+  - sparse regression
+  - symbolic regression
+  - constitutive modelling
+  - molecular dynamics
+  - rheology
+  - machine learning
+  - physics-informed learning
+  - L0 regularisation
+  - STRidge
+  - SINDy
+license: MIT
+repository-code: https://github.com/yourusername/nanofluids-ai-wp3-discovery
+references:
+  - type: article
+    authors:
+      - family-names: Rudy
+        given-names: Samuel H.
+      - family-names: Brunton
+        given-names: Steven L.
+      - family-names: Proctor
+        given-names: Joshua L.
+      - family-names: Kutz
+        given-names: J. Nathan
+    title: "Data-driven discovery of partial differential equations"
+    journal: "Science Advances"
+    volume: 3
+    issue: 4
+    year: 2017
+    doi: 10.1126/sciadv.1602614
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.XXXXXXX
+    description: "Zenodo DOI (to be assigned upon archiving)"
