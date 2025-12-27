@@ -12,11 +12,7 @@ This repository contains the **Symbolic Discovery Engine** for the NanoFluids-AI
 
 Classical constitutive modelling relies on fixed functional forms (e.g., Newton's law, Power-law). However, nanoscale confinement introduces emergent behaviours—such as strain-rate localisation and non-local stress coupling—that are not captured by standard closures.
 
-This engine solves the inverse problem: given observations 
-
-$\{ \mathbf{S}_{ij}, \boldsymbol{\tau}_{ij} \}$ 
-
-from Molecular Dynamics (MD), it identifies the operator $\boldsymbol{\tau}(\mathbf{S})$ from a library of candidate operators $\Phi(\mathbf{S})$ whilst rejecting spurious terms that violate physical constraints.
+This engine solves the inverse problem: given observations $\{ \mathbf{S}_{ij}, \boldsymbol{\tau}_{ij} \}$ from Molecular Dynamics (MD), it identifies the operator $\boldsymbol{\tau}(\mathbf{S})$ from a library of candidate operators $\Phi(\mathbf{S})$ whilst rejecting spurious terms that violate physical constraints.
 
 ### Key Capabilities
 *   **Automated Model Selection:** Distinguishes between Newtonian, non-Newtonian, and non-local physics automatically.
