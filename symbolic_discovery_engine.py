@@ -12,11 +12,11 @@ if sys.platform == 'win32':
 ================================================================================
 NANOFLUIDS-AI: WORK PACKAGE 3 – SYMBOLIC DISCOVERY ENGINE
 ================================================================================
-ERC Consolidator Grant 2026 – PI: Prof. René Fábregas
-Modelling Nature (MNat) Research Unit, Universidad de Granada
+Project: NanoFluids-AI – Automated Scientific Discovery
+Author: NanoFluids-AI Research Team
 
 Purpose:
-    Demonstrates the "Closure Rediscovery Test" (Preliminary Validation WP3).
+    Demonstrates the "Closure Rediscovery Test" for constitutive laws.
     The script generates synthetic MD data for a bulk fluid and uses a
     Sparse Identification algorithm (STRidge) to discover the constitutive law
     from a library of candidate terms, filtering out spurious non-Newtonian physics.
@@ -375,7 +375,7 @@ def plot_discovery(S, tau_obs, tau_pred, coeffs, names, mu_true, threshold,
 
     # Use constrained_layout instead of tight_layout for better compatibility
     fig.set_constrained_layout(True)
-    plt.savefig('WP3_NanoFluidsAI_Discovery.png', dpi=300, bbox_inches='tight',
+    plt.savefig('constitutive_discovery_validation.png', dpi=300, bbox_inches='tight',
                 facecolor='white', edgecolor='none')
     plt.show()
 
@@ -400,8 +400,8 @@ def plot_discovery(S, tau_obs, tau_pred, coeffs, names, mu_true, threshold,
 
 if __name__ == "__main__":
     print("="*80)
-    print("NANOFLUIDS-AI: WP3 DISCOVERY ENGINE VALIDATION")
-    print("ERC Consolidator Grant 2026 – Symbolic Regression Test")
+    print("NANOFLUIDS-AI: SYMBOLIC DISCOVERY ENGINE")
+    print("Automated Constitutive Law Learning – Validation Run")
     print("="*80)
 
     # =========================================================================
@@ -493,5 +493,5 @@ if __name__ == "__main__":
         print("RESULT: ⚠ SOME VALIDATION CRITERIA FAILED ⚠")
     print("="*80)
 
-    print(f"\nFigure saved as: WP3_NanoFluidsAI_Discovery.png")
+    print(f"\nFigure saved as: constitutive_discovery_validation.png")
     print("Validation complete.\n")

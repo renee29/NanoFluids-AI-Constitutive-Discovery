@@ -53,9 +53,6 @@ coverage.xml
 profile_default/
 ipython_config.py
 
-# pyenv
-.python-version
-
 # Environments
 .env
 .venv
@@ -81,12 +78,18 @@ venv.bak/
 ehthumbs.db
 Thumbs.db
 
-# Project-specific
-*.png
+# Project-specific (SANITIZATION)
+# Block all images/PDFs by default to avoid leaking internal docs
 *.pdf
 *.svg
-!WP3_NanoFluidsAI_Discovery.png
+*.png
 
-# Temporary files
-*.tmp
+# ALLOWLIST: Explicitly allow the validation figure for the README
+!constitutive_discovery_validation.png
+
+# Block internal analysis files
+PROMPT.md
+TECHNICAL_ANALYSIS.txt
+*_metadata.json
 *.log
+*.tmp

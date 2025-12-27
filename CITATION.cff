@@ -1,17 +1,15 @@
 cff-version: 1.2.0
 message: "If you use this software, please cite it as below."
 type: software
-title: "NanoFluids-AI WP3: Symbolic Discovery Engine (Prototype)"
-version: 1.0.0-proposal
-date-released: 2025-12-06
+title: "NanoFluids-AI: Constitutive Law Discovery Engine"
+version: 1.0.0
+date-released: 2025-12-27
 abstract: |
-  Prototype implementation of symmetry-guided symbolic distillation for
-  discovering constitutive laws from molecular dynamics data. This code
-  demonstrates the feasibility of recovering rheological closures using
-  Sequential Thresholded Ridge Regression (STRidge) whilst enforcing
-  physical consistency constraints. Developed for Work Package 3 of the
-  ERC Consolidator Grant 2026 proposal "NanoFluids-AI: Physics-Guided
-  Machine Learning for Nanoconfined Fluid Dynamics".
+  Implementation of symmetry-guided symbolic distillation for discovering
+  constitutive laws from molecular dynamics data. This engine recovers
+  rheological closures using Sequential Thresholded Ridge Regression (STRidge)
+  whilst enforcing physical consistency constraints (frame indifference and
+  thermodynamic admissibility). Part of the NanoFluids-AI computational framework.
 authors:
   - family-names: Fábregas
     given-names: René
@@ -26,11 +24,9 @@ keywords:
   - rheology
   - machine learning
   - physics-informed learning
-  - L0 regularisation
   - STRidge
-  - SINDy
 license: MIT
-repository-code: https://github.com/yourusername/nanofluids-ai-wp3-discovery
+repository-code: https://github.com/renee29/NanoFluids-AI-Constitutive-Discovery
 references:
   - type: article
     authors:
@@ -51,4 +47,4 @@ references:
 identifiers:
   - type: doi
     value: 10.5281/zenodo.XXXXXXX
-    description: "Zenodo DOI (to be assigned upon archiving)"
+    description: "Zenodo DOI (reserved)"
