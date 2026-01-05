@@ -6,7 +6,7 @@
 ![UQ: Bootstrap](https://img.shields.io/badge/UQ-Bootstrap_95%25_CI-orange.svg)
 ![Physics: Non--local Transport](https://img.shields.io/badge/Physics-Non--local_Transport-red.svg)
 ![Status: 8/8 Validated](https://img.shields.io/badge/Status-8%2F8_Validated-brightgreen.svg)
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.17843073.svg)](https://doi.org/10.5281/zenodo.17843073)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18150840.svg)](https://doi.org/10.5281/zenodo.18150840)
 
 ---
 
@@ -218,7 +218,7 @@ python symbolic_discovery_engine.py
   version      = {v1.0.0},
   year         = {2026},
   publisher    = {Zenodo},
-  doi          = {10.5281/zenodo.XXXX},
+  doi          = {10.5281/zenodo.18150840},
   url          = {https://github.com/renee29/NanoFluids-AI-Constitutive-Discovery}
 }
 ```
