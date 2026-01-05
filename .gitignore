@@ -85,7 +85,7 @@ Thumbs.db
 *.png
 
 # ALLOWLIST: Explicitly allow the validation figure for the README
-!constitutive_discovery_validation.png
+!symbolic_discovery_validation.png
 
 # Block internal analysis files
 PROMPT.md

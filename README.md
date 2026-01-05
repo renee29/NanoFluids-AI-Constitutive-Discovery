@@ -1,114 +1,240 @@
-# NanoFluids-AI: Constitutive Law Discovery Engine
+# NanoFluids-AI: Symbolic Discovery Engine for Constitutive Laws
 
 ![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)
 ![Python 3.8+](https://img.shields.io/badge/Python-3.8%2B-green.svg)
-![Method: Sparse Regression](https://img.shields.io/badge/Method-Sparse_Regression-purple.svg)
-![Status: Validated](https://img.shields.io/badge/Status-Validated-brightgreen.svg)
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.XXXXXXX.svg)](https://doi.org/10.5281/zenodo.XXXXXXX)
+![Method: STRidge](https://img.shields.io/badge/Method-STRidge-purple.svg)
+![UQ: Bootstrap](https://img.shields.io/badge/UQ-Bootstrap_95%25_CI-orange.svg)
+![Physics: Non--local Transport](https://img.shields.io/badge/Physics-Non--local_Transport-red.svg)
+![Status: 8/8 Validated](https://img.shields.io/badge/Status-8%2F8_Validated-brightgreen.svg)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.17843073.svg)](https://doi.org/10.5281/zenodo.17843073)
+
+---
 
 ## 1. Scientific Overview
 
-This repository contains the **Symbolic Discovery Engine** for the NanoFluids-AI framework. It addresses the **Structural Inverse Problem** of continuum mechanics: discovering the functional form of constitutive laws directly from noisy molecular data, without imposing *a priori* phenomenological models.
+This repository implements an **automated symbolic discovery framework** for constitutive law identification from noisy molecular dynamics (MD) data. The framework addresses a fundamental **structural inverse problem**: given stress-strain observations corrupted by thermal fluctuations, identify the underlying constitutive operator without imposing *a priori* functional forms.
 
-Classical constitutive modelling relies on fixed functional forms (e.g., Newton's law, Power-law). However, nanoscale confinement introduces emergent behaviours—such as strain-rate localisation and non-local stress coupling—that are not captured by standard closures.
+### The Inverse Problem
 
-This engine solves the inverse problem: given observations $\{ \mathbf{S}_{ij}, \boldsymbol{\tau}_{ij} \}$ from Molecular Dynamics (MD), it identifies the operator $\boldsymbol{\tau}(\mathbf{S})$ from a library of candidate operators $\Phi(\mathbf{S})$ whilst rejecting spurious terms that violate physical constraints.
+Classical continuum mechanics assumes known constitutive relations (e.g., Newtonian viscosity). However, at the nanoscale, confinement induces emergent transport phenomena—non-local stress coupling, anomalous diffusion, and breakdown of local thermodynamic equilibrium—that cannot be captured by standard closures.
+
+We formulate the discovery task as a **sparse optimisation problem**:
+
+$$\boldsymbol{\xi}^* = \underset{\boldsymbol{\xi}}{\arg\min} \left\| \boldsymbol{\tau}_{obs} - \boldsymbol{\Phi}(\mathbf{S})\boldsymbol{\xi} \right\|_2^2 + \lambda \|\boldsymbol{\xi}\|_0$$
+
+where:
+- $\boldsymbol{\tau}_{obs} = \mathcal{C}[\mathbf{S}] + \boldsymbol{\eta}(t)$ — observed stress (signal + thermal noise)
+- $\boldsymbol{\Phi}(\mathbf{S}) = \{S, S^2, S^3, \nabla S, \mathbf{1}, K_{\xi_1}*S, K_{\xi_2}*S, \ldots\}$ — overcomplete library
+- $\|\boldsymbol{\xi}\|_0$ — sparsity constraint (number of active terms)
 
 ### Key Capabilities
-*   **Automated Model Selection:** Distinguishes between Newtonian, non-Newtonian, and non-local physics automatically.
-*   **Noise Robustness:** Uses **Sequential Thresholded Ridge Regression (STRidge)** to filter out thermal noise (Gaussian fluctuations) inherent in MD data.
-*   **Interpretability:** Returns symbolic, closed-form mathematical expressions rather than black-box neural network weights.
+
+| Capability | Description |
+|------------|-------------|
+| **Local Law Recovery** | Recovers Newtonian constitutive law $\tau = 2\mu S$ from noisy data |
+| **Non-local Detection** | Identifies integral kernels $\tau(y) = \int K_\xi(y-y')S(y')\,dy'$ |
+| **Spurious Rejection** | Automatically prunes non-physical terms ($S^2$, $S^3$, yield stress) |
+| **Uncertainty Quantification** | Bootstrap 95% confidence intervals with coverage validation |
 
 ---
 
-## 2. Validation Results: The "Closure Rediscovery Test"
+## 2. Mathematical Framework
 
-To validate the engine, we performed a blind recovery test using synthetic MD data for a Newtonian fluid with significant thermal noise (5% signal-to-noise ratio).
+### 2.1 Local Constitutive Relations
 
-<p align="center">
-  <img src="constitutive_discovery_validation.png" alt="Constitutive Law Discovery Results" width="100%">
-</p>
+For a Newtonian fluid, the deviatoric stress tensor follows:
 
-> **Figure 1: Automated discovery of the Newtonian constitutive law.**
-> *   **Panel A (Constitutive Manifold Learning):** The algorithm (red line) correctly identifies the underlying linear constitutive manifold $\tau \propto S$ despite the high variance in the noisy observations (blue points). $R^2 > 0.99$.
-> *   **Panel B (Sparse Operator Selection):** The core achievement. From a library containing spurious non-linear terms ($\alpha S^2, \beta S^3$) and non-local gradients ($\gamma \nabla S$), the engine correctly identifies **only** the physical Newtonian term ($2\mu S$). All spurious coefficients are driven to zero.
+$$\boldsymbol{\tau} = 2\mu\, \mathbf{S}, \qquad \mathbf{S} = \frac{1}{2}\left(\nabla\mathbf{u} + \nabla\mathbf{u}^T\right)$$
 
-### Performance Metrics
+where $\mu$ is the dynamic viscosity and $\mathbf{S}$ the strain-rate tensor.
 
-| Metric | Value | Interpretation |
-| :--- | :--- | :--- |
-| **Discovered Viscosity** | $\mu = 2.162$ | Matches ground truth ($\mu=2.150$) with **0.56% error**. |
-| **Model Fit ($R^2$)** | $0.9937$ | Excellent fidelity to the constitutive manifold. |
-| **Active Terms** | $1$ | Correctly identifies the single physical mechanism. |
-| **Spurious Terms** | $0$ | **100% Rejection rate** of non-physical operators. |
+### 2.2 Non-local Constitutive Relations
 
----
+In nanoconfined systems, spatial correlations extend beyond the local point. The stress becomes an **integral functional**:
 
-## 3. Algorithm: Sequential Thresholded Ridge Regression
+$$\tau(y) = \int_\Omega K_\xi(y - y')\, S(y')\, dy'$$
 
-The engine implements **STRidge**, which iteratively solves the sparse regression problem by combining $L_2$ regularization with hard thresholding:
+where $K_\xi(r)$ is a **memory kernel** encoding non-local interactions. For exponential correlations:
 
-$$ \mathbf{w}^* = \text{argmin}_{\mathbf{w}} \|\mathbf{y} - \mathbf{X}\mathbf{w}\|_2^2 + \lambda \|\mathbf{w}\|_2^2 \quad \text{subject to} \quad \|\mathbf{w}\|_0 \le k $$
+$$K_\xi(r) = \frac{1}{\xi}\exp\left(-\frac{|r|}{\xi}\right), \qquad \int_{-\infty}^{\infty} K_\xi(r)\,dr = 1$$
 
-**Algorithm Steps:**
-1.  **Initialize:** Compute coefficients via Ridge regression: $\mathbf{w} = (\mathbf{X}^T\mathbf{X} + \lambda\mathbf{I})^{-1}\mathbf{X}^T\mathbf{y}$.
-2.  **Threshold:** Apply hard thresholding: $w_j = 0$ if $|w_j| < \epsilon$.
-3.  **Debias:** Re-fit the model using unregularized least squares on the **active set** (non-zero terms) to recover true physical magnitudes.
-4.  **Iterate:** Repeat until the active set stabilizes.
+The correlation length $\xi$ characterises the spatial extent of non-locality. In the limit $\xi \to 0$, the kernel reduces to a Dirac delta, recovering the local law.
 
-This approach is superior to LASSO ($L_1$) for physical discovery as it avoids shrinking the coefficients of the true physical terms, ensuring accurate parameter recovery (e.g., viscosity).
+### 2.3 Sparse Identification Algorithm
+
+We employ **Sequential Thresholded Ridge Regression (STRidge)**:
+
+1. **Ridge Regression**: $\mathbf{w} = (\mathbf{X}^T\mathbf{X} + \alpha\mathbf{I})^{-1}\mathbf{X}^T\mathbf{y}$
+2. **Hard Thresholding**: $w_j \leftarrow 0$ if $|w_j| < \epsilon$
+3. **Debiasing**: Re-fit on active set via ordinary least squares
+4. **Iteration**: Repeat until convergence of the active set
+
+This approach avoids the coefficient shrinkage of LASSO, ensuring accurate recovery of physical parameters.
 
 ---
 
-## 4. Repository Structure
+## 3. Physical Motivation
 
-```text
-.
-├── symbolic_discovery_engine.py      # MAIN SCRIPT: Generates data & runs discovery
-├── constitutive_discovery_validation.png # Output Figure (Panel A + B)
-├── requirements.txt                  # Python dependencies
-├── CITATION.cff                      # Citation metadata
-└── README.md                         # Documentation
+### Why Non-local Transport?
+
+At the nanoscale (1–10 nm), several phenomena invalidate local constitutive assumptions:
+
+| Phenomenon | Physical Origin | Consequence |
+|------------|-----------------|-------------|
+| **Knudsen effects** | Mean free path ~ channel width | Slip boundary conditions |
+| **Layering** | Molecular structuring near walls | Oscillatory density profiles |
+| **Dielectric anisotropy** | Hydrogen bond frustration | Anisotropic permittivity tensor |
+| **Viscosity enhancement** | Confinement-induced ordering | Up to 10⁶× bulk viscosity |
+
+These effects couple transport at different spatial locations, requiring **integral constitutive operators** rather than pointwise relations.
+
+### Experimental Evidence
+
+Recent experiments (Fumagalli et al., *Science* 2018) demonstrate extreme dielectric anisotropy in nanoconfined water, with out-of-plane permittivity $\varepsilon_\perp \approx 2$ versus bulk $\varepsilon \approx 80$. This motivates the need for **data-driven discovery** of constitutive laws that cannot be derived from first principles.
+
+---
+
+## 4. Validation Results
+
+We validate the framework through two blind recovery experiments with synthetic MD data (5% Gaussian noise).
+
+<div align="center">
+<img src="symbolic_discovery_validation.png" alt="Symbolic Discovery Validation Results" width="95%">
+<br>
+
+**Figure 1: Automated constitutive law discovery with uncertainty quantification.**
+
+| Panel | Result | Key Metrics |
+|:-----:|--------|-------------|
+| **A** | **Local Constitutive Manifold** — Noisy MD observations (blue) fitted by discovered linear law (red). Equations show the statistical model $\tau_{obs} = 2\mu S + \eta(t)$ and sparse optimisation functional. | $R^2 = 0.9943$ |
+| **B** | **Local Sparse Selection** — Physical Newtonian term ($2\mu\mathbf{S}$) identified; spurious terms ($\alpha S^2$, $\beta S^3$, $\gamma\nabla S$, $\tau_0$) rejected with × symbols. | Sparsity: 80%, Spurious: 0/4 |
+| **C** | **Non-local Kernel Recovery** — True exponential kernel (blue) vs discovered (red markers). Equation $K(r) = \xi^{-1}\exp(-|r|/\xi)$ shown. Perfect overlap annotated. | $L^2$ error $< 10^{-6}$ |
+| **D** | **Non-local Sparse Selection** — Local terms (S, S², S³) rejected; correct kernel $K_{\xi=0.1}$ selected (maximum coefficient). Vertical line separates local/non-local regions. | $\xi$ error: 0.0%, $R^2 = 0.9981$ |
+
+</div>
+
+### Experiment 1: Local Law Recovery
+
+| Metric | Value | Status |
+|--------|-------|--------|
+| Ground truth viscosity | $\mu_{true} = 2.150$ | — |
+| Discovered viscosity | $\mu_{disc} = 2.151$ | ✓ |
+| Relative error | **0.04%** | ✓ |
+| Bootstrap 95% CI | $[2.13, 2.17]$ | ✓ |
+| CI Coverage | $\mu_{true} \in \text{CI}$ | ✓ |
+| $R^2$ | 0.9943 | ✓ |
+| Spurious terms rejected | **4/4** | ✓ |
+| Sparsity | 80% | ✓ |
+
+### Experiment 2: Non-local Kernel Detection
+
+| Metric | Value | Status |
+|--------|-------|--------|
+| Ground truth | $\xi_{true} = 0.1$ | — |
+| Discovered | $\xi_{disc} = 0.1$ | ✓ |
+| $\xi$ error | **0.0%** | ✓ |
+| Kernel $L^2$ error | $< 10^{-6}$ | ✓ |
+| $R^2$ | 0.9981 | ✓ |
+| Local terms rejected | **3/3** | ✓ |
+
+### Validation Criteria Summary
+
+```
+[+] PASS: Local R² > 0.95
+[+] PASS: Local μ error < 5%
+[+] PASS: Local CI coverage
+[+] PASS: Local spurious rejection (4/4)
+[+] PASS: Non-local R² > 0.90
+[+] PASS: Non-local correct ξ selected
+[+] PASS: Non-local kernel L² < 0.3
+[+] PASS: Non-local local terms rejected (3/3)
+────────────────────────────────────────
+RESULT: 8/8 VALIDATION CRITERIA SATISFIED
 ```
 
 ---
 
-## 5. Usage
+## 5. Repository Structure
 
-### Prerequisites
-The suite requires a standard scientific Python stack.
+```
+.
+├── symbolic_discovery_engine.py          # Main discovery script
+├── symbolic_discovery_validation.png     # Validation figure (4 panels)
+├── requirements.txt                      # Python dependencies
+├── LICENSE                               # MIT License
+└── README.md                             # This file
+```
+
+---
+
+## 6. Installation and Usage
+
+### Requirements
 
 ```bash
-pip install -r requirements.txt
+pip install numpy matplotlib scipy
 ```
 
-### Run Discovery Demo
-Executes the synthetic validation loop: generates noisy data, constructs the operator library, runs the STRidge algorithm, and produces the validation figure.
+### Run Validation
 
 ```bash
 python symbolic_discovery_engine.py
 ```
 
-**Expected Output:**
-*   Console log detailing the library construction and convergence steps.
-*   `constitutive_discovery_validation.png`: High-resolution (300 DPI) validation plot.
+**Output:**
+- Console: Detailed log of library construction, STRidge convergence, and validation metrics
+- Figure: `symbolic_discovery_validation.png` (400 DPI, publication quality)
+
+### Configuration Parameters
+
+| Parameter | Default | Description |
+|-----------|---------|-------------|
+| `N_SAMPLES` | 200 | Number of synthetic MD samples |
+| `NOISE_LEVEL` | 0.05 | Relative noise amplitude (5%) |
+| `THRESHOLD_LOCAL` | 1.5 | Sparsity threshold for local test |
+| `THRESHOLD_NONLOCAL` | 0.25 | Sparsity threshold for non-local test |
+| `N_BOOTSTRAP` | 500 | Bootstrap resamples for UQ |
 
 ---
 
-## 6. Citation
+## 7. References
 
-If you use this discovery engine in your research, please cite:
+1. Brunton, S. L., Proctor, J. L., & Kutz, J. N. (2016). Discovering governing equations from data by sparse identification of nonlinear dynamical systems. *PNAS*, 113(15), 3932–3937.
+
+2. Rudy, S. H., Brunton, S. L., Proctor, J. L., & Kutz, J. N. (2017). Data-driven discovery of partial differential equations. *Science Advances*, 3(4), e1602614.
+
+3. Fumagalli, L., et al. (2018). Anomalously low dielectric constant of confined water. *Science*, 360(6395), 1339–1342.
+
+4. Bocquet, L., & Charlaix, E. (2010). Nanofluidics, from bulk to interfaces. *Chemical Society Reviews*, 39(3), 1073–1095.
+
+---
+
+## 8. Citation
 
 ```bibtex
 @software{nanofluids_ai_discovery_2025,
-  author = {NanoFluids-AI Research Team},
-  title = {NanoFluids-AI: Constitutive Law Discovery Engine},
-  version = {1.0.0},
-  year = {2025},
-  url = {https://github.com/renee29/NanoFluids-AI-Constitutive-Discovery},
-  doi = {10.5281/zenodo.XXXXXXX}
+  author       = {Fabregas, R.},
+  title        = {NanoFluids-AI: Symbolic Discovery Engine for Constitutive Laws},
+  version      = {v1.0.0},
+  year         = {2026},
+  publisher    = {Zenodo},
+  doi          = {10.5281/zenodo.XXXX},
+  url          = {https://github.com/renee29/NanoFluids-AI-Constitutive-Discovery}
 }
 ```
 
-## License
-This project is licensed under the MIT License.
+---
+
+## 9. License
+
+This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
+
+## Contact
+
+For questions or collaboration inquiries, please open a GitHub issue or contact:
+
+**R. Fabregas** — rfabregas@ugr.es
+
+---
+
+**Project Status**: Initial release (v1.0.0) - December 2025

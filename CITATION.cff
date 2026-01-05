@@ -1,9 +1,9 @@
-cff-version: 1.2.0
+cff-version: 1.0.0
 message: "If you use this software, please cite it as below."
 type: software
-title: "NanoFluids-AI: Constitutive Law Discovery Engine"
-version: 1.0.0
-date-released: 2025-12-27
+title: "NanoFluids-AI: Symbolic Discovery Engine for Constitutive Laws"
+version: v1.0.0
+date-released: 2026-01-05
 abstract: |
   Implementation of symmetry-guided symbolic distillation for discovering
   constitutive laws from molecular dynamics data. This engine recovers
@@ -11,8 +11,8 @@ abstract: |
   whilst enforcing physical consistency constraints (frame indifference and
   thermodynamic admissibility). Part of the NanoFluids-AI computational framework.
 authors:
-  - family-names: Fábregas
-    given-names: René
+  - family-names: Fabregas
+    given-names: Rene
     orcid: https://orcid.org/0000-0002-3751-8853
     affiliation: "Modelling Nature (MNat) Research Unit, Universidad de Granada, Spain"
     email: rfabregas@ugr.es
@@ -25,6 +25,11 @@ keywords:
   - machine learning
   - physics-informed learning
   - STRidge
+  - inverse problems
+  - uncertainty quantification
+  - bootstrap resampling
+  - integral operators
+  - non-local kernels
 license: MIT
 repository-code: https://github.com/renee29/NanoFluids-AI-Constitutive-Discovery
 references:
@@ -46,5 +51,5 @@ references:
     doi: 10.1126/sciadv.1602614
 identifiers:
   - type: doi
-    value: 10.5281/zenodo.XXXXXXX
-    description: "Zenodo DOI (reserved)"
+    value: 10.5281/zenodo.XXXX
+    description: "Zenodo DOI"
