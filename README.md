@@ -1,4 +1,4 @@
-# NanoFluids-AI: Symbolic Discovery Engine for Constitutive Laws
+# ICON₁₀: Symbolic Discovery Engine for Constitutive Laws
 
 ![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)
 ![Python 3.8+](https://img.shields.io/badge/Python-3.8%2B-green.svg)
@@ -12,7 +12,7 @@
 
 ## 1. Scientific Overview
 
-This repository implements an **automated symbolic discovery framework** for constitutive law identification from noisy molecular dynamics (MD) data. The framework addresses a fundamental **structural inverse problem**: given stress-strain observations corrupted by thermal fluctuations, identify the underlying constitutive operator without imposing *a priori* functional forms.
+This repository implements an **automated symbolic discovery framework** for identifying constitutive laws from noisy molecular dynamics (MD) data. The framework addresses a fundamental **structural inverse problem**: given stress-strain observations corrupted by thermal fluctuations, identify the underlying constitutive operator without imposing *a priori* functional forms.
 
 ### The Inverse Problem
 
@@ -214,7 +214,7 @@ python symbolic_discovery_engine.py
 ```bibtex
 @software{nanofluids_ai_discovery_2025,
   author       = {Fabregas, R.},
-  title        = {NanoFluids-AI: Symbolic Discovery Engine for Constitutive Laws},
+  title        = {ICON₁₀: Symbolic Discovery Engine for Constitutive Laws},
   version      = {v1.0.0},
   year         = {2026},
   publisher    = {Zenodo},
